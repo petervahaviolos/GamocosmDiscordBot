@@ -1,7 +1,7 @@
 import datetime
 import sys
 from os.path import isdir
-from secrets import bot_token
+from secrets_file import bot_token
 
 import discord
 from discord.ext import commands, timers
@@ -15,7 +15,7 @@ old_roles = {}
 async def on_ready():
     print('Bot online')
 
-initial_extensions = ['cogs.server']
+initial_extensions = ['server']
 
 if __name__ == '__main__':
     for extension in initial_extensions:
