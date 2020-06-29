@@ -4,7 +4,7 @@ from os.path import isdir
 from secrets_file import bot_token
 
 import discord
-from discord.ext import commands, timers
+from discord.ext import commands
 from discord.utils import find, get
 
 client = commands.Bot(command_prefix='!')
