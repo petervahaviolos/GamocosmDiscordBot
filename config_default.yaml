@@ -1,0 +1,5 @@
+serverId: SERVERID
+apiKey: APIKEY
+discordKey: DISCORDKEY
+commandPrefix: COMMANDPREFIX
+description: DESCRIPTION
