@@ -1,67 +1,84 @@
-import sys
-sys.path.append('..')
-import discord
-import requests
-import json
-from discord.ext import commands
-from secrets_file import api_key, server_id
+import requests, json
+from enum import Enum
 
-class ServerCog(commands.Cog, name='Server'):
-    base_url = f'https://gamocosm.com/servers/{server_id}/api/{api_key}/'
+class Endpoint(Enum):
+    START_SERVER = "start"
+    STOP_SERVER = "stop"
+    REBOOT_SERVER = "reboot"
+    START_MINECRAFT = "resume"
+    STOP_MINECRAFT = "pause"
+    STATUS = "status"
+    SEND_COMMAND = "exec"
 
-    def __init__(self, bot):
-        self.bot = bot
+class Server:
+    def __init__(self, server_id:str, api_key:str):
+        self.server_id = server_id
+        self.api_key = api_key
+        self.base_url = "https://gamocosm.com/servers/"
+        self.api_url = f"{self.base_url}{self.server_id}/api/{self.api_key}/"
 
-    @commands.group(invoke_without_command=True)
-    async def server(self, ctx):
-        await ctx.send(
-            '''Available commands:
-        server on
-        server off
-        minecraft on
-        minecraft off''')
+    def _get(self, endpoint:Endpoint):
+        """Send a GET request to endpoint and return the JSON parsed response"""
+        response = requests.get(self.api_url + endpoint.value)
+        return self._parse(response)
 
-    @server.command(pass_content=True, name='on')
-    async def server_on(self, ctx):
-        await ctx.send("Server turning on...")
-        response = requests.post(self.base_url + 'start')
-        await ctx.send("Server starting, wait 2 minutes" if response.ok else "Error starting server")
+    def _post(self, endpoint:Endpoint, data:dict=""):
+        """Send a POST request to endpoint with data and return the response"""
+        response = requests.post(self.api_url + endpoint.value, data=data)
+        return response
 
-    @server.command(name='status')
-    async def server_status(self, ctx):
-        response = requests.get(self.base_url + 'status')
-        content = json.loads(response.text)
-        print(content)
-        await ctx.send("Server online" if content['server'] else "Server offline")
-        await ctx.send("Minecraft online" if content['minecraft'] else "Minecraft offline")
-        await ctx.send(f"Server status: {content['status']}" if content['status'] != None else "Server status: active")
-        await ctx.send(f"Server IP: {content['domain']}")
+    def _parse(self, response):
+        """Return the JSON parsed response"""
+        return json.loads(response.text)
 
-    @server.command(pass_content=True, name='off')
-    async def server_off(self, ctx):
-        await ctx.send("Server turning off...")
-        response = requests.post(self.base_url + 'stop')
-        await ctx.send("Server offline" if response.ok else "Error stopping server")
+    def _status(self):
+        """Return the JSON response of the server status"""
+        return self._get(Endpoint.STATUS)
 
-    @commands.group(invoke_without_command=True)
-    async def minecraft(self, ctx):
-        await ctx.send('''Available commands
-                server minecraft on
-                server minecraft off''')
+    def server_start(self):
+        """Send a POST request to start the server and return the JSON parsed response"""
+        return self._post(Endpoint.START_SERVER)
 
-    @minecraft.command(pass_content=True, name='on')
-    async def minecraft_on(self, ctx):
-        await ctx.send("Minecraft turning on...")
-        response = requests.post(self.base_url + 'resume')
-        await ctx.send("Minecraft server online" if response.ok else "Error starting server")
+    def server_stop(self):
+        """Send a POST request to stop the server and return the JSON parsed response"""
+        return self._post(Endpoint.STOP_SERVER)
 
-    @minecraft.command(pass_content=True,  name='off')
-    async def minecraft_off(self, ctx):
-        await ctx.send("Minecraft turning off...")
-        response = requests.post(self.base_url + 'pause')
-        await ctx.send("Minecraft server offline" if response.ok else "Error stopping server")
+    def server_reboot(self):
+        """Send a POST request to reboot the server and return the JSON parsed response"""
+        return self._post(Endpoint.REBOOT_SERVER)
 
+    def minecraft_start(self):
+        """Send a POST request to start the minecraft server and return the JSON parsed response"""
+        return self._post(Endpoint.START_MINECRAFT)
 
-def setup(bot):
-    bot.add_cog(ServerCog(bot))
-    print("Server cog loaded")
+    def minecraft_stop(self):
+        """Send a POST request to stop the minecraft server and return the JSON parsed response"""
+        return self._post(Endpoint.STOP_MINECRAFT)
+
+    def server_online(self):
+        """Send a GET request to the server status endpoint and return the state of the server"""
+        return "online" if self._get(Endpoint.STATUS)['server'] else "offline"
+
+    def minecraft_online(self):
+        """Send a GET request to the server status endpoint and return the state of the minecraft server"""
+        return "online" if self._get(Endpoint.STATUS)['minecraft'] else "offline"
+
+    def pending_state(self):
+        """Send a GET request to the server status endpoint and return the pending state of the server"""
+        return "active" if self._get(Endpoint.STATUS)['status'] is None else self._get(Endpoint.STATUS)['status']
+
+    def ip_address(self):
+        """Send a GET request to the server status endpoint and return the ip address of the server"""
+        return self._get(Endpoint.STATUS)['ip']
+
+    def domain(self):
+        """Send a GET request to the server status endpoint and return the domain of the server"""
+        return self._get(Endpoint.STATUS)['domain']
+
+    def download(self):
+        """Send a GET request to the server status endpoint and return and return a URL to download the minecraft server world"""
+        return self._get(Endpoint.STATUS)['download']
+
+    def send_command(self, command:str):
+        """Send command to the minecraft server"""
+        return self._post(Endpoint.SEND_COMMAND, {'command': command})
