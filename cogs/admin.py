@@ -32,7 +32,7 @@ class ServerCog(commands.Cog, name='Server'):
         """Start the digitalocean server and minecraft server"""
         await ctx.send("Server starting...")
         response = self.server.server_start()
-        logging.info(f"[{server_start.__name__}] Response: {response}")
+        logging.info(f"[server_start] Response: {response}")
         await ctx.send("Server stopped successfully" if response.ok else "Error stopping server")
 
     @server.command(pass_content=True, aliases=['stop', 'off'])
@@ -40,8 +40,16 @@ class ServerCog(commands.Cog, name='Server'):
         """Stop the digitalocean server and minecraft server"""
         await ctx.send("Server stopping...")
         response = self.server.server_stop()
-        logging.info(f"[{server_stop.__name__}] Response: {response}")
+        logging.info(f"[server_stop] Response: {response}")
         await ctx.send("Server stopped successfully" if response.ok else "Error stopping server")
+
+    @server.command(pass_content=True, aliases=['reboot', 'restart'])
+    async def server_reboot(self, ctx):
+        """Restart the digitalocean server and minecraft server"""
+        await ctx.send("Server restarting...")
+        response = self.server.server_reboot()
+        logging.info(f"[server_reboot] Response: {response}")
+        await ctx.send("Server rebooted successfully" if response.ok else "Error rebooting server")
 
     @server.command(aliases=['status', 'state'])
     async def server_status(self, ctx):
@@ -58,7 +66,7 @@ class ServerCog(commands.Cog, name='Server'):
     async def send_command(self, ctx, command:str):
         """Send a command to the minecraft server"""
         response = self.server.send_command(command)
-        logging.info(f"[{send_command.__name__}] Response: {response}")
+        logging.info(f"[send_command] Response: {response}")
         await ctx.send("Command sent")
 
 
@@ -73,7 +81,7 @@ class ServerCog(commands.Cog, name='Server'):
         """Starts the minecraft server"""
         await ctx.send('Minecraft starting...')
         response = self.server.minecraft_start()
-        logging.info(f"[{minecraft_start.__name__}] Response: {response}")
+        logging.info(f"[minecraft_start] Response: {response}")
         await ctx.send("Minecraft started successfully" if response.ok else "Error starting minecraft")
 
     @minecraft.command(pass_content=True,  aliases=['stop', 'off'])
@@ -81,7 +89,7 @@ class ServerCog(commands.Cog, name='Server'):
         """Stops the minecraft server"""
         await ctx.send('Minecraft stopping...')
         response = self.server.minecraft_stop()
-        logging.info(f"[{minecraft_stop.__name__}] Response: {response}")
+        logging.info(f"[minecraft_stop] Response: {response}")
         await ctx.send("Minecraft stopped successfully" if response.ok else "Error stopping minecraft")
 
 
