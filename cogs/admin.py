@@ -33,7 +33,7 @@ class ServerCog(commands.Cog, name='Server'):
         await ctx.send("Server starting...")
         response = self.server.server_start()
         logging.info(f"[server_start] Response: {response}")
-        await ctx.send("Server stopped successfully" if response.ok else "Error stopping server")
+        await ctx.send("Server started successfully" if response.ok else "Error starting server")
 
     @server.command(pass_content=True, aliases=['stop', 'off'])
     async def server_stop(self, ctx):
