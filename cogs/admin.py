@@ -92,6 +92,12 @@ class ServerCog(commands.Cog, name='Server'):
         logging.info(f"[minecraft_stop] Response: {response}")
         await ctx.send("Minecraft stopped successfully" if response.ok else "Error stopping minecraft")
 
+    @minecraft.command(pass_content=True, aliases=['restart', 'reboot'])
+    async def minecraft_reboot(self, ctx):
+        await ctx.send("Rebooting server...")
+        minecraft_stop()
+        minecraft_start()
+
 
 def setup(bot):
     bot.add_cog(ServerCog(bot))
