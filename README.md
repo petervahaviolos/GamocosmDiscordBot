@@ -4,10 +4,10 @@ Discord Bot for controlling a gamocosm/discord minecraft server
 
 ## Discord Commands
 
-/server [start, stop] - Starts/stops the DigitalOcean server and creates a snapshot of the droplet if stopped
-/minecraft [start, stop] - Starts/stops only the Minecraft server
-/server status - View status of the DigitalOcean and Minecraft server, server ip address, and a URL to download the world
-/server send [command] - Sends a command to the Minecraft server
+- /server [start, stop] - Starts/stops the DigitalOcean server and creates a snapshot of the droplet if stopped
+- /minecraft [start, stop] - Starts/stops only the Minecraft server
+- /server status - View status of the DigitalOcean and Minecraft server, server ip address, and a URL to download the world
+- /server send [command] - Sends a command to the Minecraft server
 
 ## Installation
 
