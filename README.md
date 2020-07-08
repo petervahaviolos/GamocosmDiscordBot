@@ -1,6 +1,6 @@
 # Gamocosm Discord Bot
 
-Discord Bot for controlling a gamocosm/discord minecraft server
+Discord Bot for controlling a Gamocosm/DigitalOcean minecraft server
 
 ## Discord Commands
 
