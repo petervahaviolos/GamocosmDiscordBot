@@ -95,8 +95,6 @@ class ServerCog(commands.Cog, name='Server'):
     @minecraft.command(pass_content=True, aliases=['restart', 'reboot'])
     async def minecraft_reboot(self, ctx):
         await ctx.send("Rebooting server...")
-        minecraft_stop()
-        minecraft_start()
 
 
 def setup(bot):
